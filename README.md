@@ -1,36 +1,140 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Drug Development Dashboard
 
-## Getting Started
+A modern web application for managing and visualizing drug development programs, built with Next.js, Prisma, and PostgreSQL. Features a dashboard to view programs and detailed pages for individual programs including studies and milestones.
 
-First, run the development server:
+## Prerequisites
+
+- **Node.js** (version 18 or higher)
+- **npm** or **yarn**
+- **PostgreSQL** database (local installation or Docker)
+- **Docker** (optional, for running PostgreSQL in a container)
+
+## Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd drug-dashboard
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+## Database Setup
+
+You need a PostgreSQL database running. You can use Docker Compose (recommended) or a local PostgreSQL installation.
+
+### Option 1: Using Docker Compose (Recommended)
+
+1. **Start PostgreSQL with Docker Compose:**
+   ```bash
+   docker-compose up -d
+   ```
+   This starts a PostgreSQL container on port 5432.
+
+2. **Update the `.env` file** to match the Docker Compose credentials:
+   ```env
+   DATABASE_URL="postgresql://postgres:mypassword@localhost:5432/mydatabase"
+   ```
+   (The default `.env` has different credentials; update it to match the Docker setup.)
+
+### Option 2: Using Local PostgreSQL
+
+If you have PostgreSQL installed locally, ensure it's running and create a database. The current `.env` expects:
+- User: `admin`
+- Password: `admin`
+- Database: `drug_dashboard`
+- Host: `localhost:5432`
+
+If your setup differs, update the `DATABASE_URL` in `.env` accordingly.
+
+## Prisma Setup
+
+1. **Run database migrations:**
+   ```bash
+   npx prisma migrate dev
+   ```
+   This applies the schema to your database.
+
+2. **Generate Prisma client:**
+   ```bash
+   npx prisma generate
+   ```
+   This generates the Prisma client based on your schema.
+
+## Seeding the Database
+
+1. **Run the seed script to populate initial data:**
+   ```bash
+   npm run prisma:seed
+   ```
+   or
+   ```bash
+   npx prisma db seed
+   ```
+
+## Generating Synthetic Data (Optional)
+
+To generate additional synthetic data for testing:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npx tsx scripts/generateSyntheticData.ts
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This script creates more sample programs, studies, and milestones.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Running the Project
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
 
-## Learn More
+2. **Open your browser** and navigate to [http://localhost:3000](http://localhost:3000).
 
-To learn more about Next.js, take a look at the following resources:
+3. **Access the dashboard** at `/dashboard` to view the list of programs.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. **Click on a program name** to view its details, including studies and milestones.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+- `app/` - Next.js app directory with pages and API routes
+- `prisma/` - Database schema and migrations
+- `repositories/` - Data access layer
+- `services/` - Business logic layer
+- `scripts/` - Utility scripts for seeding and data generation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Available Scripts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `npm run dev` - Start the development server
+- `npm run build` - Build the project for production
+- `npm run start` - Start the production server
+- `npm run lint` - Run ESLint
+
+## Technologies Used
+
+- **Next.js** - React framework
+- **Prisma** - ORM and database toolkit
+- **PostgreSQL** - Database
+- **Tailwind CSS** - Styling
+- **TypeScript** - Type safety
+
+## Troubleshooting
+
+- **Database connection issues:** Ensure PostgreSQL is running and the `DATABASE_URL` in `.env` is correct.
+- **Prisma errors:** Run `npx prisma generate` after schema changes.
+- **Port conflicts:** If port 3000 is in use, Next.js will prompt for an alternative port.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests and linting
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
