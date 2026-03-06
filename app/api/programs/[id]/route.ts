@@ -1,5 +1,6 @@
 import { getProgramDetails, updateProgramMetadata } from "@/services/ProgramService"
-import { NextResponse } from "next/server"
+import { NextResponse, NextRequest } from "next/server"
+import { getAuthUser, hasRole } from "@/app/lib/authUtils"
 
 export async function GET(req:any,{params}:any){
   try {
@@ -12,8 +13,24 @@ export async function GET(req:any,{params}:any){
   }
 }
 
-export async function PATCH(req:any,{params}:any){
+export async function PATCH(req: NextRequest, { params }: any) {
   try {
+    const user = await getAuthUser(req)
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      )
+    }
+
+    if (!hasRole(user.role, "EDITOR")) {
+      return NextResponse.json(
+        { error: "You don't have permission to edit programs" },
+        { status: 403 }
+      )
+    }
+
     const { id } = await params
     const body = await req.json()
     const updated = await updateProgramMetadata(id, body)

@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { faker } from "@faker-js/faker";
+import bcryptjs from "bcryptjs";
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
@@ -35,7 +36,45 @@ async function main() {
   await prisma.milestone.deleteMany();
   await prisma.study.deleteMany();
   await prisma.program.deleteMany();
+  await prisma.user.deleteMany();
   console.log("🗑  Cleared existing data");
+
+  // Create test users with different roles
+  const hashedPasswordViewer = await bcryptjs.hash("password123", 10);
+  const hashedPasswordEditor = await bcryptjs.hash("password123", 10);
+  const hashedPasswordAdmin = await bcryptjs.hash("password123", 10);
+
+  const testUsers = await prisma.user.createMany({
+    data: [
+      {
+        id: faker.string.uuid(),
+        email: "viewer@example.com",
+        name: "Viewer User",
+        password: hashedPasswordViewer,
+        role: "VIEWER",
+      },
+      {
+        id: faker.string.uuid(),
+        email: "editor@example.com",
+        name: "Editor User",
+        password: hashedPasswordEditor,
+        role: "EDITOR",
+      },
+      {
+        id: faker.string.uuid(),
+        email: "admin@example.com",
+        name: "Admin User",
+        password: hashedPasswordAdmin,
+        role: "ADMIN",
+      },
+    ],
+  });
+
+  console.log("👥 Created test users:");
+  console.log("   Email: viewer@example.com (Password: password123) - VIEWER role");
+  console.log("   Email: editor@example.com (Password: password123) - EDITOR role");
+  console.log("   Email: admin@example.com (Password: password123) - ADMIN role");
+
 
   let totalStudies = 0;
   let totalMilestones = 0;

@@ -6,6 +6,16 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      Role     @default(VIEWER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Program {
   id              String      @id @default(uuid())
   name            String
@@ -13,26 +23,22 @@ model Program {
   phase           String
   status          String
   description     String?
-
-  studies         Study[]
-  milestones      Milestone[]
-
   createdAt       DateTime    @default(now())
-  updatedAt       DateTime?    @updatedAt
+  updatedAt       DateTime?   @updatedAt
+  milestones      Milestone[]
+  studies         Study[]
 }
 
 model Study {
-  id                String   @id @default(uuid())
+  id                String    @id @default(uuid())
   name              String
   phase             String
   targetEnrollment  Int
   currentEnrollment Int
-
   programId         String
-  program           Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
-
-  createdAt         DateTime @default(now())
+  createdAt         DateTime  @default(now())
   updatedAt         DateTime? @updatedAt
+  program           Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
 }
 
 model Milestone {
@@ -40,11 +46,15 @@ model Milestone {
   title         String
   status        String
   targetDate    DateTime
-  completedDate DateTime?         // ← add this
-
   programId     String
-  program       Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
-
   createdAt     DateTime  @default(now())
-  updatedAt     DateTime?  @updatedAt
+  updatedAt     DateTime? @updatedAt
+  completedDate DateTime?
+  program       Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  VIEWER
+  EDITOR
+  ADMIN
 }

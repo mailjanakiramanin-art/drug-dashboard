@@ -4,16 +4,16 @@ import { defineConfig } from "prisma/config";
 
 export default defineConfig({
   earlyAccess: true,
-  schema: path.join("prisma", "schema.prisma"),
+  schema: path.join("app/prisma", "schema.prisma"),
   migrations: {
-    path: "prisma/migrations",
+    path: "app/prisma/migrations",
     // Integrated seeding functionality expects this key
-    seed: "npx ts-node ./prisma/seed.ts", 
+    seed: "npx ts-node ./app/prisma/seed.ts", 
   },
   migrate: {
-    migrationsDir: path.join("prisma", "migrations"),
+    migrationsDir: path.join("app/prisma", "migrations"),
     seed: {
-      run: "npx ts-node prisma/seed.ts",
+      run: "npx ts-node app/prisma/seed.ts",
     },
     async adapter() {
       const { Pool } = await import("pg");

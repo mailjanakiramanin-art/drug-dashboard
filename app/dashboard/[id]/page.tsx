@@ -63,7 +63,7 @@ export default function ProgramDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
+      <div className="bg-gray-50 p-8">
         <div className="max-w-7xl mx-auto text-center">
           <div className="animate-pulse">Loading program details...</div>
         </div>
@@ -98,7 +98,7 @@ export default function ProgramDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
         <Link href="/dashboard" className="text-blue-500 hover:text-blue-700 underline mb-6 inline-block">
           ← Back to Dashboard
