@@ -2,11 +2,6 @@ import fs from "fs";
 import path from "path";
 import DocsViewer, { DocFile } from "@/app/lib/DocsViewer";
 
-interface DocFile {
-  name: string;
-  content: string;
-}
-
 async function loadDocs(): Promise<DocFile[]> {
   const docsDir = path.join(process.cwd(), "docs");
   const files = fs.readdirSync(docsDir).filter((f) => f.endsWith(".md"));
