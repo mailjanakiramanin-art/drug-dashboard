@@ -1,0 +1,16 @@
+flowchart LR
+
+UI[Next.js Dashboard UI]
+
+API[API Routes]
+
+SERVICE[Business Services]
+
+REPO[Repositories]
+
+DB[(Database - Prisma)]
+
+UI --> API
+API --> SERVICE
+SERVICE --> REPO
+REPO --> DB

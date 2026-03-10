@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import Link from "next/link"
 import { useAuth } from "@/app/lib/AuthContext"
 import { useRouter } from "next/navigation"
@@ -17,7 +17,7 @@ interface Program {
   description?: string
 }
 
-export default function Dashboard(){
+export default function Dashboard() {
   const { user, loading: authLoading, logout } = useAuth()
   const router = useRouter()
   const [programs, setPrograms] = useState<Program[]>([])
@@ -36,6 +36,23 @@ export default function Dashboard(){
       .then(res => res.json())
       .then(data => setPrograms(data))
   }, [])
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") handleEditClose()
+    }
+
+    document.addEventListener("keydown", handleEsc)
+    return () => document.removeEventListener("keydown", handleEsc)
+  }, [])
+
+  const firstInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (editingProgram) {
+      firstInputRef.current?.focus()
+    }
+  }, [editingProgram])
 
   const canEdit = user && (user.role === "EDITOR" || user.role === "ADMIN")
 
@@ -131,10 +148,23 @@ export default function Dashboard(){
 
     return (
       <th
-        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-        onClick={() => handleSort(field)}
+        scope="col"
+        className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
       >
-        {label}{indicator}
+        <button
+          onClick={() => handleSort(field)}
+          className="flex items-center gap-1"
+          aria-sort={
+            isActive
+              ? sortOrder === "asc"
+                ? "ascending"
+                : "descending"
+              : "none"
+          }
+        >
+          {label}
+          <span aria-hidden="true">{indicator}</span>
+        </button>
       </th>
     )
   }
@@ -142,7 +172,33 @@ export default function Dashboard(){
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-600">Loading...</div>
+        <div role="status" aria-live="polite" className="text-gray-800">Loading programs...</div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-4">
+        <p className="text-gray-800 text-lg">
+          You must be signed in to view the program dashboard.
+        </p>
+
+        <div className="flex gap-3">
+          <Link
+            href="/login"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Sign In
+          </Link>
+
+          <Link
+            href="/signup"
+            className="px-4 py-2 border border-gray-300 text-gray-800 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+          >
+            Create Account
+          </Link>
+        </div>
       </div>
     )
   }
@@ -155,7 +211,9 @@ export default function Dashboard(){
 
           {/* Search Bar */}
           <div className="mb-6">
+            <label htmlFor="program-search" className="sr-only">Search programs by name, phase, or therapeutic area</label>
             <input
+              id="table-search"
               type="text"
               placeholder="Search by name, phase, or therapeutic area..."
               value={searchQuery}
@@ -165,13 +223,14 @@ export default function Dashboard(){
           </div>
 
           {/* Results info */}
-          <div className="mb-4 text-sm text-gray-600">
+          <div aria-live="polite" className="mb-4 text-sm text-gray-800">
             Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, sortedPrograms.length)} of {sortedPrograms.length} results
           </div>
 
           <div className="bg-white shadow-md rounded-lg overflow-hidden">
 
             <table className="min-w-full divide-y divide-gray-200">
+              <caption className="sr-only">List of clinical programs with name, phase, and therapeutic area</caption>
 
               <thead className="bg-gray-50">
 
@@ -184,7 +243,7 @@ export default function Dashboard(){
                   <SortableHeader field="therapeuticArea" label="Therapeutic Area" />
 
                   {canEdit && (
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                       Actions
                     </th>
                   )}
@@ -195,11 +254,11 @@ export default function Dashboard(){
 
               <tbody className="bg-white divide-y divide-gray-200">
 
-                {paginatedPrograms.map((p:any)=>(
+                {paginatedPrograms.map((p: any) => (
                   <tr key={p.id} className="hover:bg-gray-50">
 
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
-                      <Link href={`/dashboard/${p.id}`} className="hover:text-blue-800">
+                      <Link href={`/dashboard/${p.id}`} className="hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         {p.name}
                       </Link>
                     </td>
@@ -215,6 +274,7 @@ export default function Dashboard(){
                     {canEdit && (
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <button
+                          aria-label={`Edit program ${p.name}`}
                           onClick={() => handleEditClick(p)}
                           className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs"
                         >
@@ -233,7 +293,10 @@ export default function Dashboard(){
           </div>
 
           {/* Pagination Controls */}
-          <div className="mt-6 flex items-center justify-between">
+          <nav
+            className="mt-6 flex items-center justify-between"
+            aria-label="Program table pagination"
+          >
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
@@ -242,7 +305,7 @@ export default function Dashboard(){
               Previous
             </button>
 
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-800">
               Page {currentPage} of {totalPages || 1}
             </div>
 
@@ -253,16 +316,20 @@ export default function Dashboard(){
             >
               Next
             </button>
-          </div>
+          </nav>
 
         </div>
       </div>
 
       {/* Edit Modal */}
       {editingProgram && editFormData && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div role="dialog"
+          aria-modal="true"
+          aria-labelledby="edit-program-title"
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+        >
           <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            <h2 id="edit-program-title" className="text-2xl font-bold text-gray-900 mb-4">
               Edit Program
             </h2>
 
@@ -278,6 +345,7 @@ export default function Dashboard(){
                   Name
                 </label>
                 <input
+                  ref={firstInputRef}
                   type="text"
                   value={editFormData.name}
                   onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}

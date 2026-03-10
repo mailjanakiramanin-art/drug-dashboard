@@ -9,17 +9,7 @@ The application follows a modern full-stack architecture using TypeScript, with 
 ## System Architecture
 
 ### High-Level Architecture
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │   API Routes    │    │   Database      │
-│   (Next.js)     │◄──►│   (Next.js)     │◄──►│   (PostgreSQL)  │
-│                 │    │                 │    │                 │
-│ - React Components│   │ - RESTful APIs │   │ - Prisma ORM    │
-│ - Client-side    │   │ - Business Logic│   │ - Migrations    │
-│ - Tailwind CSS   │   │ - Error Handling│   │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
+![Architecture Diagram](./architecture-diagram.svg)
 
 ### Technology Stack
 
@@ -32,7 +22,7 @@ The application follows a modern full-stack architecture using TypeScript, with 
 ## Application Structure
 
 ### Directory Structure
-
+![Architecture Diagram](./architecture-layer-diagram.png)
 ```
 drug-dashboard/
 ├── app/                          # Next.js App Router
@@ -71,38 +61,7 @@ drug-dashboard/
 ## Data Model
 
 ### Entity Relationship Diagram
-
-```
-Program
-├── id (UUID, Primary Key)
-├── name (String)
-├── therapeuticArea (String)
-├── phase (String)
-├── status (String)
-├── description (String, Optional)
-├── createdAt (DateTime)
-├── updatedAt (DateTime)
-│
-├── Studies (1:N)
-│   ├── id (UUID, Primary Key)
-│   ├── name (String)
-│   ├── phase (String)
-│   ├── targetEnrollment (Int)
-│   ├── currentEnrollment (Int)
-│   ├── programId (UUID, Foreign Key)
-│   ├── createdAt (DateTime)
-│   └── updatedAt (DateTime)
-│
-└── Milestones (1:N)
-    ├── id (UUID, Primary Key)
-    ├── title (String)
-    ├── status (String)
-    ├── targetDate (DateTime)
-    ├── completedDate (DateTime, Optional)
-    ├── programId (UUID, Foreign Key)
-    ├── createdAt (DateTime)
-    └── updatedAt (DateTime)
-```
+![Entity Relationship Diagram](./er-diagram.png)
 
 ### Database Schema
 

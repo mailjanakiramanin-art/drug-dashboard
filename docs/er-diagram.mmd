@@ -1,0 +1,36 @@
+erDiagram
+
+PROGRAM {
+  UUID id PK
+  STRING name
+  STRING therapeuticArea
+  STRING phase
+  STRING status
+  STRING description
+  DATETIME createdAt
+  DATETIME updatedAt
+}
+
+STUDY {
+  UUID id PK
+  STRING name
+  STRING phase
+  INT targetEnrollment
+  INT currentEnrollment
+  UUID programId FK
+  DATETIME createdAt
+  DATETIME updatedAt
+}
+
+MILESTONE {
+  UUID id PK
+  STRING title
+  STRING status
+  DATETIME targetDate
+  DATETIME completedDate
+  UUID programId FK
+  DATETIME createdAt
+}
+
+PROGRAM ||--o{ STUDY : has
+PROGRAM ||--o{ MILESTONE : has

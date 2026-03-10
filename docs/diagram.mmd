@@ -1,0 +1,21 @@
+flowchart LR
+
+subgraph Frontend
+  FE["Next.js
+React Components
+Tailwind CSS"]
+end
+
+subgraph Backend
+  API["API Routes
+REST APIs
+Business Logic"]
+end
+
+subgraph Database
+  DB["PostgreSQL
+Prisma ORM"]
+end
+
+FE <--> API
+API <--> DB
