@@ -12,7 +12,6 @@ export default defineConfig({
 
   // ✨ Moved connection URL into config
   datasource: {
-    url: env("DATABASE_URL"),
-    shadowDatabaseUrl: env("SHADOW_DATABASE_URL"), // optional
+    url: env("DATABASE_URL")
   },
 });
